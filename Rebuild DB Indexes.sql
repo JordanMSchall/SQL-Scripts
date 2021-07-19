@@ -1,3 +1,5 @@
+-- this will need to be a sproc on each Database
+
 create or alter procedure RebuildThirtyPercentFragIndexesOnDB
  @DatabaseName NVARCHAR(MAX) 
 as 
