@@ -1,0 +1,39 @@
+-- script to create a process for tracking check DDL changes. 
+
+CREATE TABLE [dbo].[DDL_CHANGES](
+	[IDENT] [int] IDENTITY(1,1) NOT NULL,
+	[EVT_DATA] [xml] NULL,
+	[MODIFIED_BY] [varchar](50) NULL,
+	[TIME_STAMP] [datetime2](7) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[IDENT] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TRIGGER [PTI_DDL_CHANGES_track]
+ON DATABASE
+FOR  
+	CREATE_FUNCTION, ALTER_FUNCTION, DROP_FUNCTION, -- function tracking
+	CREATE_PROCEDURE, ALTER_PROCEDURE, DROP_PROCEDURE, -- procedure tracking
+	RENAME, -- name changes 
+	CREATE_INDEX, ALTER_INDEX, DROP_INDEX, -- index tracking
+	CREATE_TABLE, ALTER_TABLE, DROP_TABLE, -- table tracking
+	CREATE_SCHEMA, ALTER_SCHEMA, DROP_SCHEMA, -- schema tracking
+	CREATE_VIEW, ALTER_VIEW, DROP_VIEW
+AS
+BEGIN
+	-- REF https://docs.microsoft.com/en-us/sql/relational-databases/triggers/ddl-events?view=sql-server-ver15
+    SET NOCOUNT ON;
+    INSERT INTO DDL_CHANGES 
+    VALUES (
+        EVENTDATA(),
+        CURRENT_USER,
+		GETDATE()
+    );
+END;
+GO
+
+ENABLE TRIGGER [PTI_DDL_CHANGES_track] ON DATABASE
+GO
