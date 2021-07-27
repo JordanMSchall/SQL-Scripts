@@ -32,9 +32,9 @@ INSERT INTO @tempIndexTable (IndexName, IndexType, TableName, AvgFragmentationIn
 )
 
 PRINT 'Indexes to rebuild:'
-SELECT * FROM @tempIndexTable;
+--SELECT * FROM @tempIndexTable;
 
-RETURN; -- Uncomment this line if you want to run the command
+--RETURN; -- Uncomment this line if you want to run the command
 
 DECLARE @totalCount INTEGER
 SELECT @totalCount = count(1) FROM @tempIndexTable
